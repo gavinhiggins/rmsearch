@@ -1,0 +1,6 @@
+# Temporary raw cache and test files
+data/raw_cache.json
+test_*
+temp_*
+*.log
+.DS_Store

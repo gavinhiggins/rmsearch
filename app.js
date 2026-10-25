@@ -27,7 +27,7 @@
     season: 'all',
     startDate: '',
     endDate: '',
-    sortBy: 'date_desc', // 'date_desc' | 'date_asc' | 'relevance'
+    sortBy: 'relevance', // 'relevance' | 'date_desc' | 'date_asc'
     
     // Pagination
     page: 1,
@@ -384,10 +384,27 @@
     const startTime = performance.now();
     let results = state.articles;
 
-    // 1. Search Query Match
+    // 1. Search Query Match & Multi-Factor Relevance Scoring
     const effectiveQuery = (state.chineseQuery || state.query || '').trim().toLowerCase();
     if (effectiveQuery) {
       const tokens = effectiveQuery.split(/\s+/).filter(Boolean);
+
+      // Known RoboMaster robot classes for title disambiguation
+      const robotTypesMap = {
+        '英雄': ['哨兵', '步兵', '工程', '空中', '无人机', '飞镖', '雷达'],
+        '哨兵': ['英雄', '步兵', '工程', '空中', '无人机', '飞镖', '雷达'],
+        '步兵': ['英雄', '哨兵', '工程', '空中', '无人机', '飞镖', '雷达'],
+        '工程': ['英雄', '哨兵', '步兵', '空中', '无人机', '飞镖', '雷达'],
+        '空中': ['英雄', '哨兵', '步兵', '工程', '飞镖', '雷达'],
+        '无人机': ['英雄', '哨兵', '步兵', '工程', '飞镖', '雷达'],
+        '飞镖': ['英雄', '哨兵', '步兵', '工程', '空中', '无人机', '雷达'],
+        '雷达': ['英雄', '哨兵', '步兵', '工程', '空中', '无人机', '飞镖']
+      };
+
+      const activeRobotClass = Object.keys(robotTypesMap).find(type => 
+        tokens.some(tok => tok.includes(type) || type.includes(tok))
+      );
+
       results = results.map(article => {
         let score = 0;
         let hasMatch = false;
@@ -397,23 +414,50 @@
         const collegeLower = (article.college || '').toLowerCase();
 
         for (const token of tokens) {
-          if (titleLower.includes(token)) { score += 10; hasMatch = true; }
-          if (titleLower.startsWith(token)) { score += 5; hasMatch = true; }
-          if (collegeLower.includes(token)) { score += 8; hasMatch = true; }
-          if (authorLower.includes(token)) { score += 4; hasMatch = true; }
-          if (snippetLower.includes(token)) { score += 2; hasMatch = true; }
+          if (titleLower.includes(token)) {
+            score += 100;
+            hasMatch = true;
+            if (titleLower.startsWith(token) || titleLower.includes(`【${token}`) || titleLower.includes(`[${token}`)) {
+              score += 40;
+            }
+          }
+          if (collegeLower.includes(token)) {
+            score += 35;
+            hasMatch = true;
+          }
+          if (authorLower.includes(token)) {
+            score += 20;
+            hasMatch = true;
+          }
+          if (snippetLower.includes(token)) {
+            score += 8;
+            hasMatch = true;
+          }
         }
 
-        // Recency slight boost only if matched
+        // Conflicting robot class demotion:
+        // If searching for "hero", an article whose title is about "sentry" and only mentions "hero" in passing
+        // is demoted so actual Hero robot designs stay at the top.
+        if (activeRobotClass && !titleLower.includes(activeRobotClass)) {
+          const conflicting = robotTypesMap[activeRobotClass];
+          if (conflicting.some(c => titleLower.includes(c))) {
+            score = Math.min(score, 2);
+          }
+        }
+
+        // Slight recency boost (max ~2-3 pts) so newer posts within the same relevance tier rank higher
         if (hasMatch && article.time) {
           const yearsSince2020 = (article.time - 1577836800000) / (1000 * 3600 * 24 * 365);
-          score += yearsSince2020 * 0.5;
+          score += yearsSince2020 * 0.4;
         }
 
+        article._score = score;
         return { article, score, hasMatch };
       })
       .filter(item => item.hasMatch)
       .map(item => item.article);
+    } else {
+      results.forEach(a => a._score = 0);
     }
 
     // 2. Resource Attachments Checkboxes
@@ -451,12 +495,20 @@
     }
 
     // 6. Sorting
-    if (state.sortBy === 'date_desc') {
+    if (state.sortBy === 'relevance') {
+      if (effectiveQuery) {
+        results.sort((a, b) => {
+          const diff = (b._score || 0) - (a._score || 0);
+          if (Math.abs(diff) > 0.1) return diff;
+          return b.time - a.time;
+        });
+      } else {
+        results.sort((a, b) => b.time - a.time);
+      }
+    } else if (state.sortBy === 'date_desc') {
       results.sort((a, b) => b.time - a.time);
     } else if (state.sortBy === 'date_asc') {
       results.sort((a, b) => a.time - b.time);
-    } else if (state.sortBy === 'relevance' && !effectiveQuery) {
-      results.sort((a, b) => b.time - a.time);
     }
 
     state.filteredArticles = results;
@@ -550,30 +602,44 @@
 
       // Attachments badges
       const pdfBadge = article.has_pdf ? `
-        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 text-[11px] font-medium" title="Article contains PDF document">
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 text-[11px] font-medium" title="Article contains PDF document download">
           <i data-lucide="file-text" class="w-3 h-3"></i>
           <span>PDF Attached</span>
         </span>
       ` : '';
 
       const zipBadge = article.has_zip ? `
-        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[11px] font-medium" title="Article contains ZIP/RAR archive download">
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[11px] font-medium" title="Article contains direct ZIP/RAR archive download on BBS">
           <i data-lucide="archive" class="w-3 h-3"></i>
-          <span>ZIP / Archive</span>
+          <span>Direct ZIP</span>
         </span>
       ` : '';
 
-      const baiduBadge = article.has_baidu ? `
-        <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 text-[11px] font-medium">
-          <i data-lucide="cloud-download" class="w-3 h-3"></i>
-          <span>Baidu Netdisk</span>
-          ${article.baidu_links && article.baidu_links.length > 0 ? `
-            <button class="copy-baidu-btn hover:text-white underline ml-1 font-mono text-[10px]" data-url="${escapeHtml(article.baidu_links[0])}" title="Copy Baidu Netdisk link">
-              Copy Link
+      let baiduBadge = '';
+      if (article.has_baidu) {
+        let baiduActions = '';
+        if (article.baidu_links && article.baidu_links.length > 0) {
+          const rawLink = article.baidu_links[0];
+          const pwdMatch = rawLink.match(/[?&]pwd=([a-zA-Z0-9]+)/);
+          const pwdCode = pwdMatch ? pwdMatch[1] : '';
+          baiduActions = `
+            ${pwdCode ? `<span class="bg-blue-600/15 dark:bg-blue-400/20 text-blue-700 dark:text-blue-300 px-1.5 py-0.2 rounded font-mono text-[10px] font-bold">pwd: ${escapeHtml(pwdCode)}</span>` : ''}
+            <a href="${escapeHtml(rawLink)}" target="_blank" rel="noopener noreferrer" class="hover:underline flex items-center gap-0.5 ml-1 text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+              Open <i data-lucide="external-link" class="w-2.5 h-2.5"></i>
+            </a>
+            <button class="copy-baidu-btn hover:text-blue-800 dark:hover:text-blue-200 underline ml-0.5 font-mono text-[10px]" data-url="${escapeHtml(rawLink)}" title="Copy Baidu Netdisk URL with password">
+              Copy
             </button>
-          ` : ''}
-        </div>
-      ` : '';
+          `;
+        }
+        baiduBadge = `
+          <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 text-[11px] font-medium">
+            <i data-lucide="cloud-download" class="w-3 h-3"></i>
+            <span>Baidu Netdisk</span>
+            ${baiduActions}
+          </div>
+        `;
+      }
 
       return `
         <article class="article-card bg-white dark:bg-darkCard rounded-2xl p-4 sm:p-5 border border-gray-200 dark:border-darkBorder shadow-sm flex flex-col justify-between">
