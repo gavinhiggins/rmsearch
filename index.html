@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RM Search | RoboMaster BBS Article Search Engine</title>
+  <meta name="description" content="Dedicated English-to-Chinese search engine for RoboMaster BBS articles (bbs.robomaster.com/article) with dictionary translation, attachment filters (PDF, ZIP, Baidu), and school filtering.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+              950: '#0f172a',
+            },
+            darkBg: '#090d16',
+            darkCard: '#111827',
+            darkBorder: '#1f293d',
+            darkInput: '#151d30'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-50 dark:bg-darkBg text-gray-900 dark:text-gray-100 min-h-screen flex flex-col font-sans antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- TOP HEADER (Search & Controls) -->
+  <header class="sticky top-0 z-40 bg-white/90 dark:bg-darkBg/90 backdrop-blur-md border-b border-gray-200 dark:border-darkBorder">
+    <div class="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div class="flex items-center justify-between gap-4">
+        
+        <!-- Brand & Title -->
+        <div class="flex items-center gap-3 shrink-0">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
+            <i data-lucide="bot" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold tracking-tight text-xl bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400 bg-clip-text text-transparent">RMSearch</span>
+              <span class="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-brand-500/10 text-brand-500 border border-brand-500/20">BBS Articles</span>
+            </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">RoboMaster BBS Search Engine • English to Chinese</p>
+          </div>
+        </div>
+
+        <!-- Search Bar Area -->
+        <div class="flex-1 max-w-3xl">
+          <div class="relative flex items-center">
+            <div class="absolute left-3.5 text-gray-400 dark:text-gray-500 pointer-events-none flex items-center">
+              <i data-lucide="search" class="w-5 h-5"></i>
+            </div>
+            <input 
+              id="searchInput" 
+              type="text" 
+              placeholder="Search in English (e.g. 'gimbal', 'sentry swerve', 'supercapacitor', 'hit', 'scut')..." 
+              class="w-full pl-11 pr-28 py-2.5 rounded-xl bg-gray-100 dark:bg-darkInput border border-gray-300 dark:border-darkBorder text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition shadow-inner"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            
+            <!-- Quick Clear Button -->
+            <button id="clearSearchBtn" class="hidden absolute right-16 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+            
+            <!-- Shortcut Badge -->
+            <div class="absolute right-3 hidden sm:flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-700">
+              <span>/</span>
+            </div>
+          </div>
+
+          <!-- Translation Status Pill / Query Expansion Indicator -->
+          <div id="translationBar" class="mt-1.5 flex flex-wrap items-center gap-2 text-xs">
+            <div id="queryTranslationPill" class="hidden items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-800/60 font-medium">
+              <i data-lucide="languages" class="w-3.5 h-3.5 shrink-0"></i>
+              <span>Searching Chinese:</span>
+              <strong id="activeChineseQuery" class="font-bold underline decoration-brand-400 underline-offset-2"></strong>
+              <span id="translationSourceBadge" class="text-[10px] opacity-75 font-mono ml-1 px-1 rounded bg-brand-200/50 dark:bg-brand-900/50">Dictionary</span>
+              <button id="editChineseBtn" title="Manually edit Chinese search term" class="ml-1 hover:text-white">
+                <i data-lucide="pencil" class="w-3 h-3"></i>
+              </button>
+            </div>
+            
+            <div id="translatingSpinner" class="hidden items-center gap-1.5 text-gray-400 text-xs">
+              <div class="w-3 h-3 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+              <span>Translating terms...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode Toggle & Navigation Links -->
+        <div class="flex items-center gap-2 shrink-0">
+          
+          <!-- Search Mode Selector Dropdown / Group -->
+          <div class="relative">
+            <div class="inline-flex rounded-lg border border-gray-200 dark:border-darkBorder bg-gray-100 dark:bg-darkCard p-0.5 text-xs font-medium">
+              <button id="modeHybrid" class="mode-btn active px-2.5 py-1 rounded-md transition" title="Checks dictionary first, then auto-translates unrecognized words">
+                Smart
+              </button>
+              <button id="modeDict" class="mode-btn px-2.5 py-1 rounded-md transition" title="Exact dictionary match from repository file">
+                Dict
+              </button>
+              <button id="modeTranslate" class="mode-btn px-2.5 py-1 rounded-md transition" title="Live machine translation">
+                Translate
+              </button>
+            </div>
+          </div>
+
+          <!-- Dictionary Reference Modal Button -->
+          <button id="openDictModalBtn" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-darkCard border border-gray-200 dark:border-darkBorder transition flex items-center gap-1 text-xs font-medium" title="View & Edit Dictionary">
+            <i data-lucide="book-open" class="w-4 h-4"></i>
+            <span class="hidden md:inline">Dictionary</span>
+          </button>
+
+          <!-- Theme Toggle -->
+          <button id="themeToggleBtn" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-darkCard border border-gray-200 dark:border-darkBorder transition" title="Toggle Dark/Light Mode">
+            <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+            <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+          </button>
+          
+          <!-- Mobile Filters Toggle -->
+          <button id="mobileFilterToggleBtn" class="lg:hidden p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-darkCard border border-gray-200 dark:border-darkBorder">
+            <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN BODY LAYOUT (Single-Screen Style) -->
+  <div class="flex-1 max-w-[1700px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 flex gap-6">
+
+    <!-- LEFT SIDEBAR: Filters & Checkboxes -->
+    <aside id="sidebar" class="w-80 shrink-0 hidden lg:block space-y-5 sticky top-24 h-[calc(100vh-7.5rem)] overflow-y-auto custom-scrollbar pr-2">
+      
+      <!-- Filter Card: Attachments & Downloads -->
+      <div class="bg-white dark:bg-darkCard rounded-2xl p-4 border border-gray-200 dark:border-darkBorder shadow-sm">
+        <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800/80 mb-3">
+          <div class="flex items-center gap-2 font-bold text-sm tracking-wide text-gray-800 dark:text-gray-200">
+            <i data-lucide="paperclip" class="w-4 h-4 text-brand-500"></i>
+            <span>Resource Attachments</span>
+          </div>
+          <span id="resFilterCountBadge" class="text-[11px] px-1.5 py-0.2 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 font-mono">0 selected</span>
+        </div>
+
+        <div class="space-y-2.5 text-sm">
+          <label class="filter-checkbox-label group">
+            <div class="flex items-center gap-2.5">
+              <input type="checkbox" id="checkPdf" class="filter-checkbox" />
+              <div class="flex items-center gap-2 text-gray-700 dark:text-gray-300 group-hover:text-brand-500 transition">
+                <span class="w-6 h-6 rounded-md bg-red-500/10 text-red-500 flex items-center justify-center shrink-0">
+                  <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                </span>
+                <span class="font-medium">Has PDF attachment</span>
+              </div>
+            </div>
+            <span id="countPdf" class="badge-count">...</span>
+          </label>
+
+          <label class="filter-checkbox-label group">
+            <div class="flex items-center gap-2.5">
+              <input type="checkbox" id="checkZip" class="filter-checkbox" />
+              <div class="flex items-center gap-2 text-gray-700 dark:text-gray-300 group-hover:text-brand-500 transition">
+                <span class="w-6 h-6 rounded-md bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
+                  <i data-lucide="archive" class="w-3.5 h-3.5"></i>
+                </span>
+                <span class="font-medium">Has ZIP file download</span>
+              </div>
+            </div>
+            <span id="countZip" class="badge-count">...</span>
+          </label>
+
+          <label class="filter-checkbox-label group">
+            <div class="flex items-center gap-2.5">
+              <input type="checkbox" id="checkBaidu" class="filter-checkbox" />
+              <div class="flex items-center gap-2 text-gray-700 dark:text-gray-300 group-hover:text-brand-500 transition">
+                <span class="w-6 h-6 rounded-md bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
+                  <i data-lucide="cloud-download" class="w-3.5 h-3.5"></i>
+                </span>
+                <span class="font-medium">Has Baidu Netdisk link</span>
+              </div>
+            </div>
+            <span id="countBaidu" class="badge-count">...</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Filter Card: Sorting & Date Range -->
+      <div class="bg-white dark:bg-darkCard rounded-2xl p-4 border border-gray-200 dark:border-darkBorder shadow-sm">
+        <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800/80 mb-3">
+          <div class="flex items-center gap-2 font-bold text-sm tracking-wide text-gray-800 dark:text-gray-200">
+            <i data-lucide="calendar" class="w-4 h-4 text-brand-500"></i>
+            <span>Date & Sorting</span>
+          </div>
+          <button id="resetDateBtn" class="text-[11px] text-gray-400 hover:text-brand-500 transition">Reset</button>
+        </div>
+
+        <!-- Sort Select -->
+        <div class="space-y-1 mb-3">
+          <label class="text-xs font-semibold text-gray-500 dark:text-gray-400">Sort Results By</label>
+          <div class="relative">
+            <select id="sortSelect" class="w-full appearance-none bg-gray-100 dark:bg-darkInput border border-gray-300 dark:border-darkBorder rounded-xl px-3 py-2 text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-500 transition pr-8">
+              <option value="relevance">🎯 Most Relevant</option>
+              <option value="date_desc" selected>📅 Latest Date (Newest First)</option>
+              <option value="date_asc">⏳ Earliest Date (Oldest First)</option>
+            </select>
+            <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+              <i data-lucide="chevron-down" class="w-4 h-4"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Season Quick Filter Pills -->
+        <div class="space-y-1.5 mb-3">
+          <label class="text-xs font-semibold text-gray-500 dark:text-gray-400">Season / Year</label>
+          <div class="grid grid-cols-4 gap-1 text-xs" id="seasonPills">
+            <button class="season-pill active" data-year="all">All</button>
+            <button class="season-pill" data-year="2026">2026</button>
+            <button class="season-pill" data-year="2025">2025</button>
+            <button class="season-pill" data-year="2024">2024</button>
+            <button class="season-pill" data-year="2023">2023</button>
+            <button class="season-pill" data-year="2022">2022</button>
+            <button class="season-pill" data-year="2021">2021</button>
+            <button class="season-pill" data-year="2020">2020</button>
+          </div>
+        </div>
+
+        <!-- Custom Date Range -->
+        <div class="space-y-2 pt-1 border-t border-gray-100 dark:border-gray-800/80">
+          <label class="text-xs font-semibold text-gray-500 dark:text-gray-400">Custom Date Range</label>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div>
+              <span class="text-[10px] text-gray-400 block mb-0.5">Start Date</span>
+              <input type="date" id="dateStart" class="w-full bg-gray-100 dark:bg-darkInput border border-gray-300 dark:border-darkBorder rounded-lg px-2 py-1.5 text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-brand-500" />
+            </div>
+            <div>
+              <span class="text-[10px] text-gray-400 block mb-0.5">End Date</span>
+              <input type="date" id="dateEnd" class="w-full bg-gray-100 dark:bg-darkInput border border-gray-300 dark:border-darkBorder rounded-lg px-2 py-1.5 text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-brand-500" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Card: Schools / Universities -->
+      <div class="bg-white dark:bg-darkCard rounded-2xl p-4 border border-gray-200 dark:border-darkBorder shadow-sm flex flex-col max-h-[380px]">
+        <div class="flex items-center justify-between pb-2.5 border-b border-gray-100 dark:border-gray-800/80 mb-2.5">
+          <div class="flex items-center gap-2 font-bold text-sm tracking-wide text-gray-800 dark:text-gray-200">
+            <i data-lucide="graduation-cap" class="w-4 h-4 text-brand-500"></i>
+            <span>Filter by School</span>
+          </div>
+          <span id="schoolSelectedCount" class="text-[11px] px-1.5 py-0.2 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 font-mono">All</span>
+        </div>
+
+        <!-- Search School Input -->
+        <div class="relative mb-2 shrink-0">
+          <input 
+            type="text" 
+            id="schoolSearchInput" 
+            placeholder="Search school name..." 
+            class="w-full pl-8 pr-3 py-1.5 rounded-lg bg-gray-100 dark:bg-darkInput border border-gray-200 dark:border-darkBorder text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-brand-500"
+          />
+          <div class="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400">
+            <i data-lucide="search" class="w-3.5 h-3.5"></i>
+          </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="flex items-center justify-between text-[11px] text-brand-500 mb-2 shrink-0 px-0.5">
+          <button id="selectAllSchoolsBtn" class="hover:underline">Select Top 5</button>
+          <button id="clearSchoolsBtn" class="hover:underline text-gray-400">Clear All</button>
+        </div>
+
+        <!-- School Checkboxes List (Scrollable) -->
+        <div id="schoolListContainer" class="flex-1 overflow-y-auto custom-scrollbar space-y-1 text-xs pr-1">
+          <!-- Populated dynamically via JS -->
+          <div class="text-center py-4 text-gray-400">Loading schools...</div>
+        </div>
+      </div>
+
+      <!-- Reset All Filters -->
+      <button id="resetAllFiltersBtn" class="w-full py-2.5 rounded-xl border border-dashed border-gray-300 dark:border-darkBorder text-gray-500 dark:text-gray-400 hover:text-brand-500 hover:border-brand-500 text-xs font-semibold flex items-center justify-center gap-2 transition">
+        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+        <span>Reset All Filters</span>
+      </button>
+
+      <!-- Scutbot & Notion Credits footer in sidebar -->
+      <div class="text-[11px] text-gray-400 dark:text-gray-500 text-center space-y-1 pb-4">
+        <p>Target: <a href="https://bbs.robomaster.com/article" target="_blank" class="underline hover:text-brand-400">bbs.robomaster.com/article</a></p>
+        <p>Mimicking <a href="https://search.scutbot.cn/" target="_blank" class="underline hover:text-brand-400">scutbot</a> • Term map from Notion</p>
+      </div>
+
+    </aside>
+
+    <!-- RIGHT / MAIN AREA: Results & Pagination -->
+    <main class="flex-1 min-w-0 flex flex-col">
+      
+      <!-- Results Stats & Active Filter Chips Bar -->
+      <div class="bg-white dark:bg-darkCard rounded-2xl p-4 border border-gray-200 dark:border-darkBorder shadow-sm mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          
+          <div class="flex items-center gap-3">
+            <span id="resultsCount" class="font-bold text-gray-900 dark:text-white text-base sm:text-lg">Loading articles...</span>
+            <span id="searchSpeed" class="text-xs text-gray-400 font-mono"></span>
+          </div>
+
+          <!-- Page size selector -->
+          <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+            <span>Show:</span>
+            <select id="pageSizeSelect" class="bg-gray-100 dark:bg-darkInput border border-gray-200 dark:border-darkBorder rounded-lg px-2 py-1 text-xs text-gray-800 dark:text-gray-200 focus:outline-none">
+              <option value="10">10 / page</option>
+              <option value="20" selected>20 / page</option>
+              <option value="50">50 / page</option>
+              <option value="100">100 / page</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Active Filter Chips -->
+        <div id="activeChipsContainer" class="flex flex-wrap items-center gap-1.5 mt-2.5 pt-2.5 border-t border-gray-100 dark:border-gray-800/80 empty:hidden">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Articles Results Container -->
+      <div id="articlesList" class="space-y-3.5 flex-1">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- No Results State -->
+      <div id="noResultsState" class="hidden flex-col items-center justify-center p-12 text-center bg-white dark:bg-darkCard rounded-2xl border border-gray-200 dark:border-darkBorder">
+        <div class="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-darkInput flex items-center justify-center text-gray-400 mb-3">
+          <i data-lucide="search-x" class="w-8 h-8"></i>
+        </div>
+        <h3 class="text-base font-bold text-gray-900 dark:text-white mb-1">No articles found</h3>
+        <p class="text-xs text-gray-500 max-w-md mb-4">Try relaxing filters, checking a broader time range, or searching for alternative English engineering terms.</p>
+        <button id="noResultsResetBtn" class="px-4 py-2 rounded-xl bg-brand-600 text-white text-xs font-semibold shadow hover:bg-brand-500 transition">
+          Clear All Filters & Query
+        </button>
+      </div>
+
+      <!-- Pagination Footer -->
+      <div id="paginationContainer" class="mt-6 flex flex-wrap items-center justify-between gap-4 py-3 border-t border-gray-200 dark:border-darkBorder">
+        <div id="paginationInfo" class="text-xs text-gray-500 dark:text-gray-400 font-mono">
+          Page 1 of 1
+        </div>
+        <div id="paginationControls" class="flex items-center gap-1.5">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- DICTIONARY MODAL -->
+  <div id="dictModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-darkCard border border-gray-200 dark:border-darkBorder w-full max-w-3xl max-h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      
+      <!-- Modal Header -->
+      <div class="p-4 sm:p-5 border-b border-gray-200 dark:border-darkBorder flex items-center justify-between bg-gray-50 dark:bg-darkInput/50">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-brand-500/10 text-brand-500 flex items-center justify-center">
+            <i data-lucide="book-marked" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base text-gray-900 dark:text-white">RoboMaster English-Chinese Dictionary</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Stored in repository: <code class="px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-800 text-[11px]">data/dictionary.json</code></p>
+          </div>
+        </div>
+        <button id="closeDictModalBtn" class="text-gray-400 hover:text-gray-600 dark:hover:text-white p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Search & Help -->
+      <div class="p-4 border-b border-gray-100 dark:border-darkBorder bg-gray-50/50 dark:bg-darkInput/20 flex flex-wrap gap-3 items-center justify-between text-xs">
+        <div class="relative flex-1 min-w-[200px]">
+          <input 
+            type="text" 
+            id="dictSearchInput" 
+            placeholder="Search dictionary entries..." 
+            class="w-full pl-8 pr-3 py-1.5 rounded-lg bg-white dark:bg-darkInput border border-gray-200 dark:border-darkBorder text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-brand-500"
+          />
+          <div class="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400">
+            <i data-lucide="search" class="w-3.5 h-3.5"></i>
+          </div>
+        </div>
+        <span class="text-gray-400">Click any term to insert into search bar!</span>
+      </div>
+
+      <!-- Modal Entries List -->
+      <div id="dictModalList" class="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-2">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 border-t border-gray-200 dark:border-darkBorder bg-gray-50 dark:bg-darkInput/50 flex items-center justify-between text-xs text-gray-500">
+        <span>Entries sourced from Notion RM Translations & Scutbot map</span>
+        <button id="closeDictModalFooterBtn" class="px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 font-medium transition">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MANUAL CHINESE EDIT PROMPT MODAL -->
+  <div id="manualEditModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-darkCard border border-gray-200 dark:border-darkBorder w-full max-w-md rounded-2xl shadow-2xl p-5 space-y-4">
+      <div class="flex items-center justify-between">
+        <h4 class="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-2">
+          <i data-lucide="pencil" class="w-4 h-4 text-brand-500"></i>
+          <span>Edit Chinese Search Term</span>
+        </h4>
+        <button id="closeManualEditBtn" class="text-gray-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <p class="text-xs text-gray-500 dark:text-gray-400">Override or refine the Chinese keywords used to query the RoboMaster BBS articles:</p>
+      <input 
+        type="text" 
+        id="manualChineseInput" 
+        class="w-full px-3 py-2 rounded-xl bg-gray-100 dark:bg-darkInput border border-gray-300 dark:border-darkBorder text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+      />
+      <div class="flex justify-end gap-2 text-xs">
+        <button id="cancelManualEditBtn" class="px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium">Cancel</button>
+        <button id="saveManualEditBtn" class="px-4 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white font-semibold">Apply Search</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

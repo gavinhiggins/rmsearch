@@ -1,0 +1,704 @@
+[
+    {
+        "zh":  "步兵",
+        "category":  "Robot Type",
+        "en":  [
+                   "infantry",
+                   "infantry robot"
+               ]
+    },
+    {
+        "zh":  "平衡步兵",
+        "category":  "Robot Type",
+        "en":  [
+                   "balance infantry",
+                   "balancing infantry"
+               ]
+    },
+    {
+        "zh":  "英雄",
+        "category":  "Robot Type",
+        "en":  [
+                   "hero",
+                   "hero robot"
+               ]
+    },
+    {
+        "zh":  "工程",
+        "category":  "Robot Type",
+        "en":  [
+                   "engineer",
+                   "engineering robot"
+               ]
+    },
+    {
+        "zh":  "哨兵",
+        "category":  "Robot Type",
+        "en":  [
+                   "sentry",
+                   "sentry robot"
+               ]
+    },
+    {
+        "zh":  "无人机",
+        "category":  "Robot Type",
+        "en":  [
+                   "drone",
+                   "uav",
+                   "aerial",
+                   "aerial robot"
+               ]
+    },
+    {
+        "zh":  "飞镖",
+        "category":  "Robot Type",
+        "en":  [
+                   "dart",
+                   "dart launcher",
+                   "dart system"
+               ]
+    },
+    {
+        "zh":  "雷达",
+        "category":  "Robot Type",
+        "en":  [
+                   "radar",
+                   "radar station"
+               ]
+    },
+    {
+        "zh":  "前哨站",
+        "category":  "Field Element",
+        "en":  [
+                   "outpost"
+               ]
+    },
+    {
+        "zh":  "能量机关",
+        "category":  "Field Element",
+        "en":  [
+                   "energy mechanism",
+                   "power rune",
+                   "buff"
+               ]
+    },
+    {
+        "zh":  "底盘",
+        "category":  "Mechanics",
+        "en":  [
+                   "chassis"
+               ]
+    },
+    {
+        "zh":  "舵轮",
+        "category":  "Mechanics",
+        "en":  [
+                   "swerve",
+                   "swerve drive",
+                   "steering wheel"
+               ]
+    },
+    {
+        "zh":  "半舵",
+        "category":  "Mechanics",
+        "en":  [
+                   "semi-swerve",
+                   "half swerve"
+               ]
+    },
+    {
+        "zh":  "全向轮",
+        "category":  "Mechanics",
+        "en":  [
+                   "omni wheel",
+                   "omni-directional wheel",
+                   "omni"
+               ]
+    },
+    {
+        "zh":  "麦轮",
+        "category":  "Mechanics",
+        "en":  [
+                   "mecanum wheel",
+                   "mecanum"
+               ]
+    },
+    {
+        "zh":  "轮腿",
+        "category":  "Mechanics",
+        "en":  [
+                   "wheeled leg",
+                   "wheel-legged",
+                   "wheel leg"
+               ]
+    },
+    {
+        "zh":  "串联腿",
+        "category":  "Mechanics",
+        "en":  [
+                   "series-legged",
+                   "series leg"
+               ]
+    },
+    {
+        "zh":  "腿",
+        "category":  "Mechanics",
+        "en":  [
+                   "articulated-legged",
+                   "leg"
+               ]
+    },
+    {
+        "zh":  "串联",
+        "category":  "Mechanics",
+        "en":  [
+                   "series"
+               ]
+    },
+    {
+        "zh":  "履带",
+        "category":  "Mechanics",
+        "en":  [
+                   "track",
+                   "tread",
+                   "caterpillar track"
+               ]
+    },
+    {
+        "zh":  "悬挂",
+        "category":  "Mechanics",
+        "en":  [
+                   "suspension"
+               ]
+    },
+    {
+        "zh":  "平衡",
+        "category":  "Mechanics",
+        "en":  [
+                   "balance"
+               ]
+    },
+    {
+        "zh":  "过洞步",
+        "category":  "Mechanics",
+        "en":  [
+                   "tunnel-crossing",
+                   "tunnel crossing"
+               ]
+    },
+    {
+        "zh":  "登岛",
+        "category":  "Mechanics",
+        "en":  [
+                   "island climbing",
+                   "island climb",
+                   "step"
+               ]
+    },
+    {
+        "zh":  "云台",
+        "category":  "Mechanics",
+        "en":  [
+                   "gimbal"
+               ]
+    },
+    {
+        "zh":  "机械臂",
+        "category":  "Mechanics",
+        "en":  [
+                   "mechanical arm",
+                   "robotic arm",
+                   "arm"
+               ]
+    },
+    {
+        "zh":  "摩擦轮",
+        "category":  "Mechanics",
+        "en":  [
+                   "friction wheel",
+                   "flywheel"
+               ]
+    },
+    {
+        "zh":  "拨弹盘",
+        "category":  "Mechanics",
+        "en":  [
+                   "ammo loading plate",
+                   "loading plate",
+                   "feed plate",
+                   "indexer"
+               ]
+    },
+    {
+        "zh":  "拨盘",
+        "category":  "Mechanics",
+        "en":  [
+                   "ammo feed",
+                   "feed"
+               ]
+    },
+    {
+        "zh":  "中心供弹",
+        "category":  "Mechanics",
+        "en":  [
+                   "central ammo supply",
+                   "center-fed",
+                   "center fed"
+               ]
+    },
+    {
+        "zh":  "下供弹",
+        "category":  "Mechanics",
+        "en":  [
+                   "bottom ammo supply",
+                   "bottom fed",
+                   "bottom-fed"
+               ]
+    },
+    {
+        "zh":  "鹅颈",
+        "category":  "Mechanics",
+        "en":  [
+                   "gooseneck"
+               ]
+    },
+    {
+        "zh":  "减速箱",
+        "category":  "Mechanics",
+        "en":  [
+                   "gearbox",
+                   "reducer",
+                   "reduction gearbox"
+               ]
+    },
+    {
+        "zh":  "滑环",
+        "category":  "Mechanics",
+        "en":  [
+                   "slip ring"
+               ]
+    },
+    {
+        "zh":  "重力补偿",
+        "category":  "Mechanics",
+        "en":  [
+                   "gravity compensation"
+               ]
+    },
+    {
+        "zh":  "超级电容",
+        "category":  "Electrical",
+        "en":  [
+                   "supercapacitor",
+                   "supercap",
+                   "ultracapacitor"
+               ]
+    },
+    {
+        "zh":  "超电",
+        "category":  "Electrical",
+        "en":  [
+                   "supercap short"
+               ]
+    },
+    {
+        "zh":  "功率控制",
+        "category":  "Electrical",
+        "en":  [
+                   "power control",
+                   "power management"
+               ]
+    },
+    {
+        "zh":  "功率",
+        "category":  "Electrical",
+        "en":  [
+                   "power"
+               ]
+    },
+    {
+        "zh":  "电池",
+        "category":  "Electrical",
+        "en":  [
+                   "battery",
+                   "new battery"
+               ]
+    },
+    {
+        "zh":  "无线充电",
+        "category":  "Electrical",
+        "en":  [
+                   "wireless charging"
+               ]
+    },
+    {
+        "zh":  "3508",
+        "category":  "Electrical",
+        "en":  [
+                   "motor 3508",
+                   "3508 motor",
+                   "3508"
+               ]
+    },
+    {
+        "zh":  "6020",
+        "category":  "Electrical",
+        "en":  [
+                   "motor 6020",
+                   "6020 motor",
+                   "6020"
+               ]
+    },
+    {
+        "zh":  "自定义控制器",
+        "category":  "Electrical",
+        "en":  [
+                   "custom controller",
+                   "custom rc"
+               ]
+    },
+    {
+        "zh":  "图传",
+        "category":  "Electrical",
+        "en":  [
+                   "image transmission",
+                   "vtx",
+                   "video link"
+               ]
+    },
+    {
+        "zh":  "图传链路",
+        "category":  "Electrical",
+        "en":  [
+                   "image transmission link"
+               ]
+    },
+    {
+        "zh":  "裁判系统",
+        "category":  "System",
+        "en":  [
+                   "referee system",
+                   "judging system"
+               ]
+    },
+    {
+        "zh":  "装甲板",
+        "category":  "System",
+        "en":  [
+                   "armor plate",
+                   "armor"
+               ]
+    },
+    {
+        "zh":  "PID",
+        "category":  "Control",
+        "en":  [
+                   "pid",
+                   "pid control"
+               ]
+    },
+    {
+        "zh":  "UI",
+        "category":  "Software",
+        "en":  [
+                   "ui",
+                   "client ui"
+               ]
+    },
+    {
+        "zh":  "自瞄",
+        "category":  "Vision",
+        "en":  [
+                   "auto-aiming",
+                   "auto aim",
+                   "autoaim",
+                   "aimbot"
+               ]
+    },
+    {
+        "zh":  "视觉",
+        "category":  "Vision",
+        "en":  [
+                   "computer vision",
+                   "vision",
+                   "cv"
+               ]
+    },
+    {
+        "zh":  "导航",
+        "category":  "Software",
+        "en":  [
+                   "navigation",
+                   "nav",
+                   "slam"
+               ]
+    },
+    {
+        "zh":  "电控",
+        "category":  "Discipline",
+        "en":  [
+                   "electronic control",
+                   "embedded"
+               ]
+    },
+    {
+        "zh":  "机械",
+        "category":  "Discipline",
+        "en":  [
+                   "mechanical",
+                   "mechanics"
+               ]
+    },
+    {
+        "zh":  "开源",
+        "category":  "Document",
+        "en":  [
+                   "open source",
+                   "opensource"
+               ]
+    },
+    {
+        "zh":  "步兵开源",
+        "category":  "Document",
+        "en":  [
+                   "infantry open source"
+               ]
+    },
+    {
+        "zh":  "英雄开源",
+        "category":  "Document",
+        "en":  [
+                   "hero open source"
+               ]
+    },
+    {
+        "zh":  "工程开源",
+        "category":  "Document",
+        "en":  [
+                   "engineer open source"
+               ]
+    },
+    {
+        "zh":  "哨兵开源",
+        "category":  "Document",
+        "en":  [
+                   "sentry open source"
+               ]
+    },
+    {
+        "zh":  "空中机器人开源",
+        "category":  "Document",
+        "en":  [
+                   "aerial open source",
+                   "drone open source"
+               ]
+    },
+    {
+        "zh":  "技术报告",
+        "category":  "Document",
+        "en":  [
+                   "technical report",
+                   "tech report"
+               ]
+    },
+    {
+        "zh":  "赛季规划",
+        "category":  "Document",
+        "en":  [
+                   "season planning",
+                   "roadmap"
+               ]
+    },
+    {
+        "zh":  "规则",
+        "category":  "Document",
+        "en":  [
+                   "rules",
+                   "rulebook"
+               ]
+    },
+    {
+        "zh":  "2025",
+        "category":  "Season",
+        "en":  [
+                   "2025",
+                   "rm2025"
+               ]
+    },
+    {
+        "zh":  "2024",
+        "category":  "Season",
+        "en":  [
+                   "2024",
+                   "rm2024"
+               ]
+    },
+    {
+        "zh":  "2023",
+        "category":  "Season",
+        "en":  [
+                   "2023",
+                   "rm2023"
+               ]
+    },
+    {
+        "zh":  "上海交通大学",
+        "category":  "University",
+        "en":  [
+                   "shanghai jiao tong university",
+                   "sjtu",
+                   "jiao tong"
+               ]
+    },
+    {
+        "zh":  "交龙",
+        "category":  "Team",
+        "en":  [
+                   "jiaolong",
+                   "sjtu jiaolong"
+               ]
+    },
+    {
+        "zh":  "华南理工大学",
+        "category":  "University",
+        "en":  [
+                   "south china university of technology",
+                   "scut"
+               ]
+    },
+    {
+        "zh":  "华南虎",
+        "category":  "Team",
+        "en":  [
+                   "south china tiger",
+                   "south china tigers"
+               ]
+    },
+    {
+        "zh":  "哈尔滨工业大学",
+        "category":  "University",
+        "en":  [
+                   "harbin institute of technology",
+                   "hit"
+               ]
+    },
+    {
+        "zh":  "哈尔滨工业大学（深圳）",
+        "category":  "University",
+        "en":  [
+                   "hit shenzhen"
+               ]
+    },
+    {
+        "zh":  "香港科技大学",
+        "category":  "University",
+        "en":  [
+                   "hong kong university of science and technology",
+                   "hkust"
+               ]
+    },
+    {
+        "zh":  "广东工业大学",
+        "category":  "University",
+        "en":  [
+                   "guangdong university of technology",
+                   "gdut"
+               ]
+    },
+    {
+        "zh":  "深圳大学",
+        "category":  "University",
+        "en":  [
+                   "shenzhen university",
+                   "szu"
+               ]
+    },
+    {
+        "zh":  "东北大学",
+        "category":  "University",
+        "en":  [
+                   "northeastern university",
+                   "neu"
+               ]
+    },
+    {
+        "zh":  "中国科学技术大学",
+        "category":  "University",
+        "en":  [
+                   "university of science and technology of china",
+                   "ustc"
+               ]
+    },
+    {
+        "zh":  "同济大学",
+        "category":  "University",
+        "en":  [
+                   "tongji university",
+                   "tongji"
+               ]
+    },
+    {
+        "zh":  "南京理工大学",
+        "category":  "University",
+        "en":  [
+                   "nanjing university of science and technology",
+                   "njust"
+               ]
+    },
+    {
+        "zh":  "东南大学",
+        "category":  "University",
+        "en":  [
+                   "southeast university",
+                   "seu"
+               ]
+    },
+    {
+        "zh":  "华中科技大学",
+        "category":  "University",
+        "en":  [
+                   "huazhong university of science and technology",
+                   "hust"
+               ]
+    },
+    {
+        "zh":  "中南大学",
+        "category":  "University",
+        "en":  [
+                   "central south university",
+                   "csu"
+               ]
+    },
+    {
+        "zh":  "厦门大学",
+        "category":  "University",
+        "en":  [
+                   "xiamen university",
+                   "xmu"
+               ]
+    },
+    {
+        "zh":  "北京理工大学",
+        "category":  "University",
+        "en":  [
+                   "beijing institute of technology",
+                   "bit"
+               ]
+    },
+    {
+        "zh":  "北京航空航天大学",
+        "category":  "University",
+        "en":  [
+                   "beihang university",
+                   "buaa"
+               ]
+    },
+    {
+        "zh":  "浙江大学",
+        "category":  "University",
+        "en":  [
+                   "zhejiang university",
+                   "zju"
+               ]
+    }
+]
